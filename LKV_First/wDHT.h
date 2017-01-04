@@ -43,6 +43,8 @@ class DHT {
    float readHumidity(bool Renew);
    boolean read(bool Renew);
    uint8_t _pin;
+   float prevT, prevH;
+   uint32_t lastMs;
  private:
   uint8_t data[6];
   uint8_t _type, _bit, _port;

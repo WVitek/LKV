@@ -9,5 +9,5 @@ char mqttBuf[] = "01/kkkkk/cc/description";
 uint8_t mqttServerIP[4] = { 192,168,1,200 };
 uint16_t mqttServerPort = 1883u;
 
-DHT dht[] = { DHT(7, DHT22) };
+DHT dht[] = { DHT(7, DHT22), DHT(32, DHT22) };
 const int nDHT = sizeof(dht) / sizeof(DHT);
