@@ -41,7 +41,6 @@ float DHT::readTemperature(bool Renew) {
       }
       break;
     }
-	prevT = f;
   }
   return f;
 }
@@ -61,7 +60,6 @@ float DHT::readHumidity(bool Renew) {
       f /= 10;
       break;
     }
-	prevH = f;
   }
   return f;
 }

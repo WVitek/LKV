@@ -18,12 +18,18 @@ extern uint16_t mqttServerPort;
 extern char mqttBuf[];
 
 #define USE_DHT
+#define USE_DS18
+
 #ifdef USE_DHT
 #include "wDHT.h"
 extern DHT dht[];
 extern const int nDHT;
-
 #endif // USE_DHT
+
+#ifdef USE_DS18
+extern uint8_t ds18pin[];
+extern const int nDS18;
+#endif // USE_DS18
 
 
 #endif

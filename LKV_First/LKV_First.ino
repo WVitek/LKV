@@ -1,6 +1,8 @@
 #include <SPI.h>
 #include <PubSubClient.h>
 #include <Ethernet.h>
+#include <DallasTemperature.h>
+#include <OneWire.h>
 
 #include "Common.h"
 
