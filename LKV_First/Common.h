@@ -16,6 +16,7 @@ void common_setup();
 void common_loop();
 
 char* pin_to_dec(int pin);
+int dec_to_pin(char *twoCharStr);
 
 #endif
 

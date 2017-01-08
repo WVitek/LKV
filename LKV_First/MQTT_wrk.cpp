@@ -5,23 +5,28 @@
 #include <PubSubClient.h>
 #include "Common.h"
 
-// Callback function header
-void callback(char* topic, uint8_t* payload, unsigned int length);
+bool default_handler(char* topic, uint8_t* payload, unsigned int length) { return false; }
+
+FuncMQTThandler f_handler = default_handler;
+
+void mqttCallback(char* topic, uint8_t* payload, unsigned int length);
 
 EthernetClient ethClient;
-PubSubClient client(mqttServerIP, mqttServerPort, callback, ethClient);
+PubSubClient mqttClient(mqttServerIP, mqttServerPort, mqttCallback, ethClient);
 
-// Callback function
-void callback(char* topic, uint8_t* payload, unsigned int length) {
+// MQTT callback function
+void mqttCallback(char* topic, uint8_t* payload, unsigned int length)
+{
+	if (f_handler(topic, payload, length) || length == 0)
+		return;
 	// In order to republish this payload, a copy must be made
 	// as the orignal payload buffer will be overwritten whilst
 	// constructing the PUBLISH packet.
-
 	// Allocate the correct amount of memory for the payload copy
 	byte* p = (byte*)malloc(length);
 	// Copy the payload to the new buffer
 	memcpy(p, payload, length);
-	client.publish("outTopic", p, length);
+	mqttClient.publish("outTopic", p, length);
 	// Free the memory
 	free(p);
 }
@@ -51,16 +56,28 @@ char* MQTT_topic(const char kind[5], const char code[2], const char descr[])
 		mqttBuf[11] = 0;
 	else {
 		mqttBuf[11] = '/';
-		for (int i = 12; (mqttBuf[i] = descr[i - 12]) != 0 && i<24; i++);
+		for (int i = 12; (mqttBuf[i] = descr[i - 12]) != 0 && i < 24; i++);
 	}
 	return mqttBuf;
 }
 
 void MQTT_publish(char* topic, char* msg)
 {
-	if (client.connected())
-		client.publish(topic, msg);
+	if (mqttClient.connected())
+		mqttClient.publish(topic, msg);
 	Serial.print(topic); Serial.print('\t'); Serial.println(msg);
+}
+
+void MQTT_subscribe(char * topic, uint8_t qos)
+{
+	mqttClient.subscribe(topic, qos);
+}
+
+FuncMQTThandler MQTT_setHandler(FuncMQTThandler newCallback)
+{
+	FuncMQTThandler prev = f_handler;
+	f_handler = newCallback;
+	return prev;
 }
 
 static uint32_t prevMs = 0;
@@ -72,14 +89,16 @@ bool MQTT_connect(char* reason)
 	clientName[0] = buf[0];
 	clientName[1] = buf[1];
 	clientName[2] = '\0';
-	if (client.connect(clientName) != 1)
+	if (mqttClient.connect(clientName) != 1)
 	{
 		Serial.println("MQTT: Error connecting");
 		return false;
 	}
 	Serial.println("MQTT: Connected");
-	client.subscribe(MQTT_topic("DIOUT", "#", NULL));
-	client.publish(MQTT_topic("EVENT", "00", "connect"), reason);
+	// special form of callback after reconnect to MQTT-server
+	mqttCallback(NULL, NULL, 0);
+	//mqttClient.subscribe(MQTT_topic("DOUTS", "#", NULL));
+	mqttClient.publish(MQTT_topic("EVENT", "00", "connect"), reason);
 	return true;
 }
 
@@ -91,11 +110,11 @@ void MQTT_setup()
 
 bool MQTT_loop()
 {
-	client.loop();
-	if (millis() - prevMs < 10000u)
+	mqttClient.loop();
+	if (millis() - prevMs < 5000u)
 		return false;
 	prevMs = millis();
-	if (!client.connected())
+	if (!mqttClient.connected())
 		MQTT_connect("loop");
 	return true;
 }

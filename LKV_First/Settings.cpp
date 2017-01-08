@@ -15,6 +15,11 @@ const int nDHT = sizeof(dht) / sizeof(DHT);
 #endif
 
 #ifdef USE_DS18
-uint8_t ds18pin[] = { 6 };
-const int nDS18 = sizeof(ds18pin) / sizeof(uint8_t);
+uint8_t pinsDS18[] = { 6 };
+const int nPinsDS18 = sizeof(pinsDS18) / sizeof(uint8_t);
+#endif
+
+#ifdef USE_DI
+int8_t pinsDI[] = { 40,41,42,43,44,45,46,47,48,49,50,51,52,53 };
+const int nPinsDI = sizeof(pinsDI) / sizeof(int8_t);
 #endif

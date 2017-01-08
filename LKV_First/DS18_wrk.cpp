@@ -6,7 +6,7 @@
 #include <DallasTemperature.h>
 #include <OneWire.h>
 
-const uint16_t POLL_PERIOD = 30000u / nDS18;
+const uint16_t POLL_PERIOD = 30000u / nPinsDS18;
 const uint32_t REFRESH_PERIOD = 300000ul;
 static DallasTemperature ds;
 
@@ -35,9 +35,9 @@ static PollData *pd;
 
 bool DS18_setup()
 {
-	pd = (PollData*)malloc(sizeof(PollData)*nDS18);
-	for (int i = 0; i < nDS18; i++)
-		pd[i] = PollData(ds18pin[i]);
+	pd = (PollData*)malloc(sizeof(PollData)*nPinsDS18);
+	for (int i = 0; i < nPinsDS18; i++)
+		pd[i] = PollData(pinsDS18[i]);
 	prevMs = 0 - POLL_PERIOD;
 	iDS18 = 0;
 }
@@ -52,7 +52,7 @@ bool DS18_loop()
 	ds.setOneWire(&(pd[iDS18].wire));
 	ds.requestTemperatures();
 	uint16_t t16 = ds.getTemp(&(pd[iDS18].addr[0]));
-	char *sCode = pin_to_dec(ds18pin[iDS18]);
+	char *sCode = pin_to_dec(pinsDS18[iDS18]);
 	if (t16 == DEVICE_DISCONNECTED_RAW)
 		MQTT_publish(MQTT_topic(sKind, sCode, sError), "n/c");
 	else
@@ -69,7 +69,7 @@ bool DS18_loop()
 		}
 	}
 
-	if (++iDS18 == nDS18)
+	if (++iDS18 == nPinsDS18)
 		iDS18 = 0;
 	return true;
 }
