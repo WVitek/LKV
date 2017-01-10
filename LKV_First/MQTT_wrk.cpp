@@ -17,15 +17,13 @@ static PubSubClient mqttClient(mqttServerIP, mqttServerPort, mqttCallback, ethCl
 // MQTT callback function
 void mqttCallback(char* topic, uint8_t* payload, unsigned int length)
 {
-	if (topic != NULL) {
-		if (length > 0) {
-			Serial.print(topic);
-			Serial.println((char)payload[0]);
-		}
-		else Serial.println(topic);
-	}
 	if (f_handler(topic, payload, length) || length == 0)
 		return;
+	if (topic != NULL) {
+		Serial.print(topic);
+		Serial.print('=');
+		Serial.println((char)payload[0]);
+	}
 	// In order to republish this payload, a copy must be made
 	// as the orignal payload buffer will be overwritten whilst
 	// constructing the PUBLISH packet.
@@ -78,7 +76,7 @@ void MQTT_publish(char* topic, char* msg)
 void MQTT_subscribe(char * topic, uint8_t qos)
 {
 	mqttClient.subscribe(topic, qos);
-	Serial.print("MQTT_subscribe to "); Serial.println(topic);
+	//Serial.print("MQTT_subscribe to "); Serial.println(topic);
 }
 
 FuncMQTThandler MQTT_setHandler(FuncMQTThandler newCallback)

@@ -63,5 +63,5 @@ int dec_to_pin(char *twoCharStr)
 	char c1 = twoCharStr[1];
 	if (c1 < '0' || '9' < c1)
 		return -1;
-	return (c1 - '0') * 10 + (c0 - '0');
+	return (c0 - '0') * 10 + (c1 - '0');
 }

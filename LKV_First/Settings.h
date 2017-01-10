@@ -17,8 +17,8 @@ extern uint16_t mqttServerPort;
 
 extern char mqttBuf[];
 
-#define USE_DHT
-#define USE_DS18
+//#define USE_DHT
+//#define USE_DS18
 #define USE_DO
 //#define USE_DI
 
