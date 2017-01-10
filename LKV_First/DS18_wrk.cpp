@@ -6,7 +6,7 @@
 #include <DallasTemperature.h>
 #include <OneWire.h>
 
-const uint16_t POLL_PERIOD = 30000u / nPinsDS18;
+const uint16_t POLL_PERIOD = 10000u / nPinsDS18;
 const uint32_t REFRESH_PERIOD = 300000ul;
 static DallasTemperature ds;
 
@@ -52,21 +52,22 @@ bool DS18_loop()
 	ds.setOneWire(&(pd[iDS18].wire));
 	ds.requestTemperatures();
 	uint16_t t16 = ds.getTemp(&(pd[iDS18].addr[0]));
-	char *sCode = pin_to_dec(pinsDS18[iDS18]);
-	if (t16 == DEVICE_DISCONNECTED_RAW)
-		MQTT_publish(MQTT_topic(sKind, sCode, sError), "n/c");
-	else
+
+	float t = (t16 == DEVICE_DISCONNECTED_RAW) ? NAN : ds.rawToCelsius(t16);
+	float dT = t - pd[iDS18].prevT;
+
+	if (millis() - pd[iDS18].lastMs > REFRESH_PERIOD || !(-0.1f <= dT && dT <= 0.1f))
 	{
-		char sValue[6];
-		float t = ds.rawToCelsius(t16);
-		float dT = t - pd[iDS18].prevT;
-		if (millis() - pd[iDS18].lastMs > REFRESH_PERIOD || dT < -0.1f || 0.1f < dT)
-		{
-			pd[iDS18].prevT = t;
-			dht[iDS18].lastMs = millis();
+		char *sCode = pin_to_dec(pinsDS18[iDS18]);
+		if (t16 == DEVICE_DISCONNECTED_RAW)
+			MQTT_publish(MQTT_topic(sKind, sCode, sError), "n/c");
+		else {
+			char sValue[6];
 			dtostrf(t, 4, 1, sValue);
 			MQTT_publish(MQTT_topic(sKind, sCode, "temp"), sValue);
 		}
+		pd[iDS18].prevT = t;
+		pd[iDS18].lastMs = millis();
 	}
 
 	if (++iDS18 == nPinsDS18)

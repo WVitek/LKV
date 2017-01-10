@@ -7,16 +7,23 @@
 
 bool default_handler(char* topic, uint8_t* payload, unsigned int length) { return false; }
 
-FuncMQTThandler f_handler = default_handler;
-
 void mqttCallback(char* topic, uint8_t* payload, unsigned int length);
 
-EthernetClient ethClient;
-PubSubClient mqttClient(mqttServerIP, mqttServerPort, mqttCallback, ethClient);
+static FuncMQTThandler f_handler = default_handler;
+static EthernetClient ethClient;
+static PubSubClient mqttClient(mqttServerIP, mqttServerPort, mqttCallback, ethClient);
+//static PubSubClient mqttClient(mqttServerIP, mqttServerPort, NULL, ethClient);
 
 // MQTT callback function
 void mqttCallback(char* topic, uint8_t* payload, unsigned int length)
 {
+	if (topic != NULL) {
+		if (length > 0) {
+			Serial.print(topic);
+			Serial.println((char)payload[0]);
+		}
+		else Serial.println(topic);
+	}
 	if (f_handler(topic, payload, length) || length == 0)
 		return;
 	// In order to republish this payload, a copy must be made
@@ -63,14 +70,15 @@ char* MQTT_topic(const char kind[5], const char code[2], const char descr[])
 
 void MQTT_publish(char* topic, char* msg)
 {
-	if (mqttClient.connected())
-		mqttClient.publish(topic, msg);
+	//if (mqttClient.connected())
+	mqttClient.publish(topic, msg);
 	Serial.print(topic); Serial.print('\t'); Serial.println(msg);
 }
 
 void MQTT_subscribe(char * topic, uint8_t qos)
 {
 	mqttClient.subscribe(topic, qos);
+	Serial.print("MQTT_subscribe to "); Serial.println(topic);
 }
 
 FuncMQTThandler MQTT_setHandler(FuncMQTThandler newCallback)
@@ -80,10 +88,12 @@ FuncMQTThandler MQTT_setHandler(FuncMQTThandler newCallback)
 	return prev;
 }
 
-static uint32_t prevMs = 0;
+static uint32_t prevMs = -5000;
 
 bool MQTT_connect(char* reason)
 {
+	if (mqttClient.connected())
+		return true;
 	char* buf = MQTT_topic(NULL, NULL, NULL);
 	char clientName[3];
 	clientName[0] = buf[0];
@@ -91,10 +101,10 @@ bool MQTT_connect(char* reason)
 	clientName[2] = '\0';
 	if (mqttClient.connect(clientName) != 1)
 	{
-		Serial.println("MQTT: Error connecting");
+		Serial.print("MQTT: Error connecting @"); Serial.println(reason);
 		return false;
 	}
-	Serial.println("MQTT: Connected");
+	Serial.print("MQTT: Connected @"); Serial.println(reason);
 	// special form of callback after reconnect to MQTT-server
 	mqttCallback(NULL, NULL, 0);
 	//mqttClient.subscribe(MQTT_topic("DOUTS", "#", NULL));
@@ -111,12 +121,12 @@ void MQTT_setup()
 bool MQTT_loop()
 {
 	mqttClient.loop();
-	if (millis() - prevMs < 5000u)
-		return false;
-	prevMs = millis();
-	if (!mqttClient.connected())
-		MQTT_connect("loop");
-	return true;
+	//if (millis() - prevMs < 5000u)
+	return false;
+	//prevMs = millis();
+	//if (!mqttClient.connected())
+	//	MQTT_connect("loop");
+	//return true;
 }
 
 

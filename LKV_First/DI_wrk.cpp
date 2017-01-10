@@ -1,7 +1,7 @@
-// 
-// 
-// 
 #include "Common.h"
+
+#ifdef USE_DI
+
 #include "MQTT_wrk.h"
 #include "DI_wrk.h"
 
@@ -54,3 +54,5 @@ bool DI_loop()
 	}
 	return changed;
 }
+
+#endif

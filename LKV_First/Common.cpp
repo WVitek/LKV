@@ -16,7 +16,6 @@
 void common_setup()
 {
 	Serial.begin(9600);
-	MQTT_setup();
 #ifdef USE_DI
 	DI_setup();
 #endif
@@ -29,7 +28,7 @@ void common_setup()
 #ifdef USE_DS18
 	DS18_setup();
 #endif
-
+	MQTT_setup();
 }
 
 void common_loop()

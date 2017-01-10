@@ -1,5 +1,8 @@
-#include "DO_wrk.h"
 #include "Common.h"
+
+#ifdef USE_DO
+
+#include "DO_wrk.h"
 #include "MQTT_wrk.h"
 
 static FuncMQTThandler prevHandler;
@@ -8,9 +11,10 @@ const char* sDOUTS = "DOUTS";
 
 bool mqttHandler(char* topic, uint8_t* payload, unsigned int length)
 {
+	//Serial.println("DO_wrk::mqttHandler");
 	if (topic == NULL) 
 		// after reconnect we need update subscribes
-		MQTT_subscribe(MQTT_topic(sDOUTS, "#", NULL), MQTT_QOS1);
+		MQTT_subscribe(MQTT_topic(sDOUTS, "#", NULL), 0);
 	else if (strlen(topic) == 10 && length == 1)// && strncmp(topic + 3, sDOUTS, 5) == 0)
 	{
 		//                 01234567890
@@ -36,3 +40,5 @@ void DO_setup()
 {
 	prevHandler = MQTT_setHandler(mqttHandler);
 }
+
+#endif

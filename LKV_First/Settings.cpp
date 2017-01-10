@@ -3,11 +3,19 @@
 #include "Settings.h"
 
 uint8_t ethernetMAC[6] = { 0xDE, 0xED, 0xBA, 0xFE, 0xFE, 0xED };
-uint8_t ethernetIP[4] = { 192,168,1,220 };
 char mqttBuf[] = "01/kkkkk/cc/description";
 
+/*
+// @home
+uint8_t ethernetIP[4] = { 192,168,1,220 };
 uint8_t mqttServerIP[4] = { 192,168,1,200 };
 uint16_t mqttServerPort = 1883u;
+/*/
+// @work
+uint8_t ethernetIP[4] = { 172,22,130,220 };
+uint8_t mqttServerIP[4] = { 172,22,130,44 };
+uint16_t mqttServerPort = 3389u;
+//*/
 
 #ifdef USE_DHT
 DHT dht[] = { DHT(7, DHT22), DHT(32, DHT22) };
