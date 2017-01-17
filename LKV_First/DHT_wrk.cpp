@@ -5,8 +5,8 @@
 #include "DHT_wrk.h"
 #include "MQTT_wrk.h"
 
-const uint16_t POLL_PERIOD = 10000u / nDHT;
-const uint32_t REFRESH_PERIOD = 300000ul;
+const uint16_t POLL_PERIOD = 1000u / nDHT;
+const uint32_t REFRESH_PERIOD = 10000ul;
 static uint32_t prevMs;
 static int iDHT;
 

@@ -6,8 +6,8 @@
 #include <DallasTemperature.h>
 #include <OneWire.h>
 
-const uint16_t POLL_PERIOD = 10000u / nPinsDS18;
-const uint32_t REFRESH_PERIOD = 300000ul;
+const uint16_t POLL_PERIOD = 1000u / nPinsDS18;
+const uint32_t REFRESH_PERIOD = 10000ul;
 static DallasTemperature ds;
 
 class PollData
