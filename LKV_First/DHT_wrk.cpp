@@ -10,15 +10,28 @@ const uint32_t REFRESH_PERIOD = 10000ul;
 static uint32_t prevMs;
 static int iDHT;
 
-bool DHT_setup()
+static FuncMQTThandler prevHandler;
+
+static bool mqttHandler(char* topic, uint8_t* payload, unsigned int length)
 {
-	for (int i = 0; i < nDHT; i++) 
+	if (topic == NULL) {
+		prevMs = millis() - POLL_PERIOD;
+		for (int i = 0; i < nDHT; i++)
+			dht[i].lastMs = millis() - REFRESH_PERIOD;
+	}
+	return prevHandler(topic, payload, length);
+}
+
+void DHT_setup()
+{
+	for (int i = 0; i < nDHT; i++)
 	{
 		dht[i].begin();
 		dht[i].lastMs = 0 - REFRESH_PERIOD;
 	}
 	prevMs = 0 - POLL_PERIOD;
 	iDHT = 0;
+	prevHandler = MQTT_setHandler(mqttHandler);
 }
 
 const char sKind[] = "DHTxx";
@@ -28,30 +41,63 @@ bool DHT_loop()
 	if (millis() - prevMs < POLL_PERIOD)
 		return false;
 	prevMs = millis();
-	float t = dht[iDHT].readTemperature(true);
-	float h = dht[iDHT].readHumidity(false);
-	char *sCode = pin_to_dec(dht[iDHT]._pin);
-	if (isnan(h) || isnan(t))
-		MQTT_publish(MQTT_topic(sKind, sCode, sError), "NaN");
-	else
-	{
-		char sValue[6];
-		float dT = t - dht[iDHT].prevT;
-		float dH = h - dht[iDHT].prevH;
-		if (millis() - dht[iDHT].lastMs > REFRESH_PERIOD || dT < -0.5f || 0.5f < dT || dH < -1.0f || 1.0f < dH)
-		{
-			dht[iDHT].prevT = t;
-			dht[iDHT].prevH = h;
-			dht[iDHT].lastMs = millis();
-			dtostrf(t, 4, 1, sValue);
-			MQTT_publish(MQTT_topic(sKind, sCode, "temp"), sValue);
-			dtostrf(h, 4, 1, sValue);
-			MQTT_publish(MQTT_topic(sKind, sCode, "humi"), sValue);
+	
+	int i = iDHT;
+	if (++iDHT == nDHT)
+		iDHT = 0;
+
+	float t = dht[i].readTemperature(true);
+	float h = dht[i].readHumidity(false);
+	bool needRefresh = millis() - dht[i].lastMs > REFRESH_PERIOD;
+
+	bool nanT = isnan(t);
+	if (!needRefresh) {
+		if (nanT) {
+			if (!isnan(dht[i].prevT))
+				needRefresh = true;
+		}
+		else {
+			float dT = t - dht[i].prevT;
+			if (!(-0.5f <= dT && dT <= 0.5f))
+				needRefresh = true;
 		}
 	}
 
-	if (++iDHT == nDHT)
-		iDHT = 0;
+	bool nanH = isnan(h);
+	if (!needRefresh) {
+		if (nanH) {
+			if (!isnan(dht[i].prevH))
+				needRefresh = true;
+		}
+		else {
+			float dH = h - dht[i].prevH;
+			if (!(-1.0f <= dH && dH <= 1.0f))
+				needRefresh = true;
+		}
+	}
+
+	if (!needRefresh)
+		return true;
+
+	dht[i].lastMs = millis();
+	dht[i].prevT = t;
+	dht[i].prevH = h;
+
+	// publish
+	char sBuf[6];
+	char *sValue;
+	char *sCode = pin_to_dec(dht[i]._pin);
+
+	if (nanT)
+		sValue = sErrValue;
+	else { dtostrf(t, 4, 1, sBuf); sValue = sBuf; }
+	MQTT_publish(MQTT_topic(sKind, sCode, "temp"), sValue);
+
+	if (nanH)
+		sValue = sErrValue;
+	else { dtostrf(h, 4, 1, sBuf); sValue = sBuf; }
+	MQTT_publish(MQTT_topic(sKind, sCode, "humi"), sValue);
+
 	return true;
 }
 

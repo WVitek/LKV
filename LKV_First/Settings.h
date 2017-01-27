@@ -9,33 +9,41 @@
 #include "WProgram.h"
 #endif
 
-extern uint8_t ethernetMAC[6];
-extern uint8_t ethernetIP[4];
-
-extern uint8_t mqttServerIP[4];
-extern uint16_t mqttServerPort;
-
-extern char mqttBuf[];
-
 #define USE_DHT
 #define USE_DS18
 #define USE_DO
 #define USE_DI
+#define USE_AI
+
+//#define USE_DEBUG
+
+#ifdef USE_DEBUG
+#define DEBUG_PRINT(...) { Serial.print(__VA_ARGS__); }
+#define DEBUG_PRINTLN(...) { Serial.println(__VA_ARGS__); }
+#else
+#define DEBUG_PRINT(...) {}
+#define DEBUG_PRINTLN(...) {}
+#endif
 
 #ifdef USE_DHT
 #include "wDHT.h"
 extern DHT dht[];
 extern const int nDHT;
-#endif // USE_DHT
+#endif
 
 #ifdef USE_DS18
 extern uint8_t pinsDS18[];
 extern const int nPinsDS18;
-#endif // USE_DS18
+#endif
 
 #ifdef USE_DI
 extern int8_t pinsDI[];
 extern const int nPinsDI;
+#endif
+
+#ifdef USE_AI
+extern uint8_t pinsAI[];
+extern const int nPinsAI;
 #endif
 
 #endif

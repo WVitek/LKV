@@ -12,12 +12,20 @@
 #ifdef USE_DO
 #include "DO_wrk.h"
 #endif
+#ifdef USE_AI
+#include "AI_wrk.h"
+#endif
 
 void common_setup()
 {
+#ifdef  USE_DEBUG
 	Serial.begin(9600);
+#endif //  USE_DEBUG
 #ifdef USE_DI
 	DI_setup();
+#endif
+#ifdef USE_AI
+	AI_setup();
 #endif
 #ifdef USE_DO
 	DO_setup();
@@ -42,6 +50,9 @@ void common_loop()
 #endif
 #ifdef USE_DS18
 	if (DS18_loop()) return;
+#endif
+#ifdef USE_AI
+	if (AI_loop()) return;
 #endif
 
 }

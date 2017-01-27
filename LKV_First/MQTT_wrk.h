@@ -15,7 +15,7 @@ const uint8_t MQTT_QOS2 = 2 << 1;
 void MQTT_setup();
 bool MQTT_loop();
 
-const char sError[] = "error";
+static char sErrValue[] = "-255";
 char* MQTT_topic(const char kind[5], const char code[2], const char descr[]);
 void MQTT_publish(char* topic, char* msg);
 void MQTT_subscribe(char* topic, uint8_t qos);

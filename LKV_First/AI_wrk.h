@@ -1,7 +1,7 @@
-// DHT_wrk.h
+// AI_wrk.h
 
-#ifndef _DHT_WRK_h
-#define _DHT_WRK_h
+#ifndef _AI_WRK_h
+#define _AI_WRK_h
 
 #if defined(ARDUINO) && ARDUINO >= 100
 	#include "arduino.h"
@@ -9,8 +9,8 @@
 	#include "WProgram.h"
 #endif
 
-void DHT_setup();
-bool DHT_loop();
+void AI_setup();
+bool AI_loop();
 
 #endif
 
