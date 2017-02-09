@@ -103,11 +103,11 @@ bool DS18_loop()
 	pd[i].lastMs = millis();
 	pd[i].prevT = t;
 
-	char sBuf[6];
+	char sBuf[16];
 	char *sValue;
 	if (nanT)
 		sValue = sErrValue;
-	else { dtostrf(t, 4, 1, sBuf); sValue = sBuf; }
+	else { dtostrf(t, 1, 1, sBuf); sValue = sBuf; }
 	char *sCode = pin_to_dec(pinsDS18[i]);
 	MQTT_publish(MQTT_topic(sKind, sCode, "temp"), sValue);
 	return true;

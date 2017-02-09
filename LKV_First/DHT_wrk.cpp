@@ -84,18 +84,18 @@ bool DHT_loop()
 	dht[i].prevH = h;
 
 	// publish
-	char sBuf[6];
+	char sBuf[16];
 	char *sValue;
 	char *sCode = pin_to_dec(dht[i]._pin);
 
 	if (nanT)
 		sValue = sErrValue;
-	else { dtostrf(t, 4, 1, sBuf); sValue = sBuf; }
+	else { dtostrf(t, 1, 1, sBuf); sValue = sBuf; }
 	MQTT_publish(MQTT_topic(sKind, sCode, "temp"), sValue);
 
 	if (nanH)
 		sValue = sErrValue;
-	else { dtostrf(h, 4, 1, sBuf); sValue = sBuf; }
+	else { dtostrf(h, 1, 1, sBuf); sValue = sBuf; }
 	MQTT_publish(MQTT_topic(sKind, sCode, "humi"), sValue);
 
 	return true;
