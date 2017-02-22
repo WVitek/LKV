@@ -1,0 +1,21 @@
+Group 					gFloor1			"1 этаж"	(All)
+Group:Number:AVG 		gShuttersPerc	"задать %" 	(All)
+Group				gShutters		"Ставни"	(All)
+Group 					gKitchen		"Кухня"		(All)
+Group 					gHall			"Зал"		(All)
+Group 					gSouth			"Южная сторона"		(All)
+
+Switch KitchenSouthShutterUp		"dout22"	{mqtt=">[mymqtt:01/DOUTS/22:command:ON:0],>[mymqtt:01/DOUTS/22:command:OFF:1]"}
+Switch KitchenSouthShutterDown		"dout23"	{mqtt=">[mymqtt:01/DOUTS/23:command:ON:0],>[mymqtt:01/DOUTS/23:command:OFF:1]"}
+Rollershutter KitchenSouthShutter	"Кухня-юг [%d%%]"	(gFloor1, gShutters, gKitchen, gSouth)	{autoupdate="false"}
+Number KitchenSouthShutterPerc		"задать %"	(gFloor1, gShuttersPerc, gKitchen, gSouth)
+
+Switch KitchenFrontShutterUp		"dout24"	{mqtt=">[mymqtt:01/DOUTS/24:command:ON:0],>[mymqtt:01/DOUTS/24:command:OFF:1]"}
+Switch KitchenFrontShutterDown		"dout25"	{mqtt=">[mymqtt:01/DOUTS/25:command:ON:0],>[mymqtt:01/DOUTS/25:command:OFF:1]"}
+Rollershutter KitchenFrontShutter	"Кухня-фасад [%d%%]"	(gFloor1, gShutters, gKitchen)	{autoupdate="false"}
+Number KitchenFrontShutterPerc		"задать %"	(gFloor1, gShuttersPerc, gKitchen)
+
+Switch HallShutterUp				"dout26"	{mqtt=">[mymqtt:01/DOUTS/26:command:ON:0],>[mymqtt:01/DOUTS/26:command:OFF:1]"}
+Switch HallShutterDown				"dout27"	{mqtt=">[mymqtt:01/DOUTS/27:command:ON:0],>[mymqtt:01/DOUTS/27:command:OFF:1]"}
+Rollershutter HallShutter			"Зал [%d%%]"	(gFloor1, gShutters, gHall)	{autoupdate="false"}
+Number HallShutterPerc				"задать %"	(gFloor1, gShuttersPerc, gHall, gSouth)

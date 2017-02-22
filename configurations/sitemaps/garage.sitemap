@@ -1,0 +1,17 @@
+sitemap demo label="Гараж"
+{
+	//Group item=Garage label="Реле..." icon="garage"
+	Frame label="Реле..." 
+ 	{
+		//Switch item=RS_GarDoor1
+		Switch item=RS_GarDoor1 //mappings=[100="100%",70="70%", 50="50%"]
+		//Text item=RS_GarDoor1
+		//mappings=["INCREASE"="up", "DECREASE"="down"]
+ 		Switch item=R_GarDoor1_up
+ 		Switch item=R_GarDoor1_down
+ 		Switch item=R_GarDoor2_up
+ 		Switch item=R_GarDoor2_down
+//		Text item=Gar_Door1_Closed
+//		Text item=Gar_Door2_Closed
+    }
+}

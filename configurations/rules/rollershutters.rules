@@ -1,0 +1,358 @@
+import org.joda.time.*
+import org.openhab.core.types.*
+import org.openhab.core.library.types.*
+import org.openhab.core.library.items.*
+import org.openhab.model.script.actions.*
+import org.openhab.model.script.actions.Timer
+import org.eclipse.xtext.xbase.lib.* // Functions$
+import java.util.HashMap
+import java.util.LinkedHashMap
+import java.util.ArrayList
+import java.util.Map
+import java.util.concurrent.locks.Lock
+import java.util.concurrent.locks.ReentrantLock
+    
+var HashMap<String, Object> extras = newHashMap(
+	"$lock" -> new ReentrantLock() as Object
+)
+	
+val Functions$Function6 extraForShutter = [
+	HashMap<String, Object> extras,
+	RollershutterItem shutter,
+	SwitchItem switch_up,
+	SwitchItem switch_down,
+	Integer full_time_encoded,
+	Boolean is_raw
+|
+	var Object tUp = Math::floor(full_time_encoded / 1000)*100
+	var Object tDn = full_time_encoded % 1000 * 100
+	println("tUp="+tUp + " tDn="+tDn)
+	extras.put(shutter.name, newHashMap(
+		"shutter" -> shutter,
+		"timer" -> null as Timer,
+		"full_up_time" -> tUp,
+		"full_down_time" -> tDn,
+		"switch_up" -> switch_up,
+		"switch_down" -> switch_down,
+		"curr_percent"-> 0,
+		"target_percent"-> 0,
+		"speed" -> 0,
+		"initial_ms"-> 0,
+		"is_raw" -> is_raw
+	) as HashMap<String, Object>)
+]
+
+val Functions$Function3 handleRawCmd = [
+	HashMap<String, Object> extras,
+	String shutterName,
+	String cmd
+|
+	//println("@hrc.1, "+cmd)
+	var shutterExtras = extras.get(shutterName) as HashMap<String, Object>
+	var swUp = shutterExtras.get("switch_up") as SwitchItem
+	var swDn = shutterExtras.get("switch_down") as SwitchItem
+	var isRaw = shutterExtras.get("is_raw") as Boolean
+    switch(cmd)
+    {
+        case "UP":
+        if(isRaw)
+        {
+        	swDn.sendCommand(OFF)
+        	swUp.sendCommand(ON)
+        }
+        case "DOWN":
+        if(isRaw)
+        {
+        	swUp.sendCommand(OFF)
+        	swDn.sendCommand(ON)
+        }
+        default: // STOP
+        {
+        	var timer = shutterExtras.get("timer") as Timer
+        	if(timer!=null)
+        	{
+				shutterExtras.put("timer", null)
+        		timer.cancel()
+       		}
+		    var speed = shutterExtras.get("speed") as Number
+			shutterExtras.put("speed", 0)
+	    	if(isRaw)
+	    	{
+	    		if(speed<0)
+	    			swUp.sendCommand(OFF)
+	    		else
+	    			swDn.sendCommand(OFF)
+			}
+        }
+    } 
+]
+
+val Functions$Function1 pulseRelay = [
+	SwitchItem relayItem
+|
+	if(relayItem.state == ON)
+		relayItem.sendCommand(OFF)
+	createTimer(now.plusMillis(100)) 
+	[|
+		if(relayItem.state == OFF){
+			relayItem.sendCommand(ON)
+			createTimer(now.plusMillis(250)) 
+			[|
+				if(relayItem.state == ON)
+					relayItem.sendCommand(OFF)
+			]
+		}
+	]
+]
+
+// lambda expression that can be used as a function (here with 3 parameters)
+val Functions$Function3 updatePercent = [
+	HashMap<String, Object> extras,
+	String shutterName,
+	Boolean fromTimer 
+|
+	var shutterExtras = extras.get(shutterName) as HashMap<String, Object>
+    var speed = shutterExtras.get("speed") as Number
+    if(speed==0)
+    	return shutterExtras.get("curr_percent")
+    var initialMs = shutterExtras.get("initial_ms") as Number
+    var targetPercent = shutterExtras.get("target_percent") as Number
+	var timer = shutterExtras.get("timer") as Timer
+	
+    var Number curDelta = (now.millis - initialMs)*speed
+    var Number currPercent
+    var Number limitedPercent
+    var boolean needStop = false
+    if(curDelta<0) {	
+    	currPercent = 100+curDelta
+    	if(currPercent<=targetPercent)
+    		needStop = true
+    	if (currPercent<0)
+    		limitedPercent = 0
+    	else limitedPercent = currPercent
+    }
+    else {
+     	currPercent = curDelta
+     	if(currPercent>=targetPercent)
+     		needStop = true
+    	if (currPercent>100)
+    		limitedPercent = 100
+    	else limitedPercent = currPercent
+  	}
+    shutterExtras.put("curr_percent", limitedPercent)
+    var rollerShutter = shutterExtras.get("shutter") as RollershutterItem
+    rollerShutter.postUpdate(limitedPercent.intValue)
+    //println("@up.5, " + currPercent.intValue)
+    if(fromTimer)
+    {
+	    if(needStop) {
+		    var cmdHandler = extras.get("$handleRawCmd") as Functions$Function3
+	    	cmdHandler.apply(extras, shutterName, "STOP")
+        }
+	    else {
+			var Integer msToComplete = ((targetPercent-currPercent) / speed).intValue
+			if(msToComplete>500)
+				msToComplete=500
+	    	timer.reschedule(now.plusMillis(msToComplete))
+    	}
+	}
+    return currPercent  	
+]
+
+var Functions$Function3 setPercent = [
+	HashMap<String, Object> extras,
+	String shutterName,
+	Number targetPercent 
+|
+	var shutterExtras = extras.get(shutterName) as HashMap<String, Object>
+    var currSpeed = shutterExtras.get("speed") as Number
+    var rolloUpdatePercent = extras.get("$updatePercent") as Functions$Function3
+    var currPercent = rolloUpdatePercent.apply(extras, shutterName, false) as Number
+    if(currSpeed == 0)
+    {
+    	if(Math::abs((currPercent-targetPercent).floatValue)<1)
+    		return 0
+    }
+    else {
+	    var currTargetPercent = shutterExtras.get("target_percent") as Number
+    	if(currTargetPercent==targetPercent)
+    		return 0
+    }
+    var Number newSpeed
+    var Number newInitMs
+    if(currPercent > targetPercent)
+    {	// need move UP
+    	newSpeed = -100/(shutterExtras.get("full_up_time") as Number)
+    	newInitMs = now.millis - (currPercent-100) / newSpeed 
+    }
+    else 
+    {	// need move DOWN
+    	newSpeed = 100/(shutterExtras.get("full_down_time") as Number)
+    	newInitMs = now.millis - currPercent / newSpeed 
+    }
+    //println("@sp.3, " + targetPercent)
+    if(currSpeed!=newSpeed)
+    {
+	    var cmdHandler = extras.get("$handleRawCmd") as Functions$Function3
+	    if(newSpeed<0)
+	    	cmdHandler.apply(extras, shutterName, "UP")
+	    else
+	    	cmdHandler.apply(extras, shutterName, "DOWN")
+    }
+    shutterExtras.put("target_percent", targetPercent)
+    shutterExtras.put("initial_ms", newInitMs)
+    shutterExtras.put("speed", newSpeed)
+	var Integer msToComplete = ((targetPercent-currPercent) / newSpeed).intValue
+	if(msToComplete>500)
+		msToComplete=500
+	var timer = shutterExtras.get("timer") as Timer
+	if(timer==null) 
+	{
+	    //println("@sp.createTimer, " + msToComplete)
+    	timer = createTimer(now.plusMillis(msToComplete))
+    	[|
+			var lock = extras.get("$lock") as Lock
+			lock.lock()
+			try
+			{
+			    var updPercent = extras.get("$updatePercent") as Functions$Function3
+	    		updPercent.apply(extras, shutterName, true)
+    		}
+    		finally lock.unlock()
+    	]
+        shutterExtras.put("timer", timer)
+    }
+    else 
+    {
+    	//println("@sp.reshedule, " + msToComplete)
+    	timer.reschedule(now.plusMillis(msToComplete))
+   	}
+]
+	 
+var Functions$Function3 handleUserCmd = [
+	HashMap<String, Object> extras,
+	String shutterName,
+	Command cmd 
+|
+	println(shutterName+"."+cmd) 
+	var lock = extras.get("$lock") as Lock
+	lock.lock()
+	try
+	{
+	    switch(cmd)
+	    {
+	        case UP:
+	        {
+			    var setPercent = extras.get("$setPercent") as Functions$Function3
+			    setPercent.apply(extras, shutterName, -100)
+	        }
+	        case DOWN:
+	        {
+			    var setPercent = extras.get("$setPercent") as Functions$Function3
+			    setPercent.apply(extras, shutterName, 200)
+	        }
+	        case STOP: 
+	        {
+			    var cmdHandler = extras.get("$handleRawCmd") as Functions$Function3
+			    cmdHandler.apply(extras, shutterName, "STOP")
+	        }
+	    }
+    }
+    finally lock.unlock() 
+]
+
+var Functions$Function3 handleUserPerc = [
+	HashMap<String, Object> extras,
+	String shutterName,
+	Command cmd 
+|
+	var lock = extras.get("$lock") as Lock
+	lock.lock()
+	try
+	{
+	    var Integer p
+	    switch(cmd)
+	    {
+	        case 0: p=-100
+	        case 1: p=10
+	        case 2: p=20
+	        case 3: p=30
+	        case 4: p=40
+	        case 5: p=50
+	        case 6: p=60
+	        case 7: p=70
+	        case 8: p=80
+	        case 9: p=90
+	        default: p=200 // 10 and other
+	    }
+	    var setPercent = extras.get("$setPercent") as Functions$Function3
+	    setPercent.apply(extras, shutterName, p)
+    }
+    finally lock.unlock() 
+]
+
+rule "Initialization"
+	when System started
+then
+	extras.put("$handleRawCmd", handleRawCmd)
+	extras.put("$updatePercent", updatePercent)
+	extras.put("$setPercent", setPercent)
+	extras.put("$handleUserCmd", handleUserCmd)
+	extraForShutter.apply(extras, RS_GarDoor1, R_GarDoor1_up, R_GarDoor1_down, 050050, true)
+	extraForShutter.apply(extras, KitchenSouthShutter, KitchenSouthShutterUp, KitchenSouthShutterDown, 050050, true)
+	extraForShutter.apply(extras, KitchenFrontShutter, KitchenFrontShutterUp, KitchenFrontShutterDown, 100100, true)
+	extraForShutter.apply(extras, HallShutter, HallShutterUp, HallShutterDown, 150150, true)
+end
+
+rule "Кухня-юг управление"
+when Item KitchenSouthShutter received command 
+then handleUserCmd.apply(extras, "KitchenSouthShutter", receivedCommand) end
+
+rule "Кухня-юг процент"
+when Item KitchenSouthShutterPerc received command 
+then handleUserPerc.apply(extras, "KitchenSouthShutter", receivedCommand) end
+
+rule "Кухня-фасад управление"
+when Item KitchenFrontShutter received command 
+then handleUserCmd.apply(extras, "KitchenFrontShutter", receivedCommand) end
+
+rule "Кухня-фасад процент"
+when Item KitchenFrontShutterPerc received command 
+then handleUserPerc.apply(extras, "KitchenFrontShutter", receivedCommand) end
+
+rule "Зал управление"
+when Item HallShutter received command 
+then handleUserCmd.apply(extras, "HallShutter", receivedCommand) end
+
+rule "Зал процент"
+when Item HallShutterPerc received command 
+then handleUserPerc.apply(extras, "HallShutter", receivedCommand) end
+
+rule "Cредний процент закрытия ставень"
+when Item gShutters changed
+then
+	var Number sum = 0
+	var items = gShutters.members.immutableCopy()
+	var n = 0 
+	var i=items.size
+	while((i=i-1)>=0) {
+		var state = items.get(i).state
+		if(state!=Uninitialized && state!=Undefined)
+		{
+			sum = sum + (state as DecimalType)
+			n = n+1
+		}
+	}
+	//println("sum="+sum)
+	if(n>0)
+		gShutters.postUpdate(sum/n)
+	//else gShutters.postUpdate(Undefined)
+end
+
+rule "RS_GarDoor1 Control Rule"
+when
+    Item RS_GarDoor1 received command 
+then
+	handleUserCmd.apply(extras, "RS_GarDoor1", receivedCommand)
+end
+

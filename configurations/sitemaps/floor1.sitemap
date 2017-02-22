@@ -1,0 +1,18 @@
+sitemap demo label="1 этаж"
+{
+	Frame label="Группы"
+	{
+		Group item=gKitchen icon="kitchen"
+		Text item=gShutters label="Доля закрытых ставень [%.1f%%]" icon="groundfloor"
+		Selection item=gShuttersPerc mappings=[0="0% (открыто)", 1="10%", 2="20%", 3="30%", 4="40%", 5="50%", 6="60%", 7="70%", 8="80%", 9="90%", 10="100% (закрыто)"]
+	}
+	Frame label="Ставни" 
+ 	{
+ 		Switch item=KitchenSouthShutter
+ 		Selection item=KitchenSouthShutterPerc mappings=[0="0% (открыто)", 1="10%", 2="20%", 3="30%", 4="40%", 5="50%", 6="60%", 7="70%", 8="80%", 9="90%", 10="100% (закрыто)"]
+ 		Switch item=KitchenFrontShutter
+ 		Selection item=KitchenFrontShutterPerc mappings=[0="0% (открыто)", 1="10%", 2="20%", 3="30%", 4="40%", 5="50%", 6="60%", 7="70%", 8="80%", 9="90%", 10="100% (закрыто)"]
+ 		Switch item=HallShutter
+ 		Selection item=HallShutterPerc mappings=[0="0% (открыто)", 1="10%", 2="20%", 3="30%", 4="40%", 5="50%", 6="60%", 7="70%", 8="80%", 9="90%", 10="100% (закрыто)"]
+ 	}
+}

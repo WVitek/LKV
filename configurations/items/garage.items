@@ -1,0 +1,15 @@
+Group Garage
+
+Switch R_GarDoor1_up		"Реле #1"	(Garage,Doors)	//{mqtt=">[mymqtt:01/DOUTS/22:command:ON:0],>[mymqtt:01/DOUTS/22:command:OFF:1]"}
+Switch R_GarDoor1_down		"Реле #2"	(Garage,Doors)	//{mqtt=">[mymqtt:01/DOUTS/23:command:ON:0],>[mymqtt:01/DOUTS/23:command:OFF:1]"}
+
+Rollershutter RS_GarDoor1	"Ворота №1"	(Garage, Doors)	{autoupdate="false"}
+
+Switch R_GarDoor2_up		"Откр. ворота 2"	//{mqtt=">[mymqtt:01/DOUTS/24:command:ON:0],>[mymqtt:01/DOUTS/24:command:OFF:1]"}
+Switch R_GarDoor2_down		"Закр. ворота 2"	//{mqtt=">[mymqtt:01/DOUTS/25:command:ON:0],>[mymqtt:01/DOUTS/25:command:OFF:1]"}
+
+//Contact Gar_Door1_Closed	"Ворота 1" <garagedoor> (Garage, Doors)
+//Contact Gar_Door2_Closed	"Ворота 2" <garagedoor> (Garage, Doors)
+Contact Gar_Motion_Sensor	"Датчик движения [MAP(motion.map):%s]" <siren> (Garage, Motion)	{mqtt="<[mymqtt:01/DINPS/40:state:OPEN:0],<[mymqtt:01/DINPS/40:state:CLOSED:1]"}
+
+String VoiceCommand

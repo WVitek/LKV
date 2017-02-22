@@ -13,6 +13,7 @@ uint16_t mqttServerPort = 1883u;
 /*/
 // @work
 uint8_t ethernetIP[4] = { 172,22,130,220 };
+//uint8_t ethernetIP[4] = { 192,168,31,220 }; // через роутер
 uint8_t mqttServerIP[4] = { 172,22,130,44 };
 uint16_t mqttServerPort = 3389u;
 //*/
