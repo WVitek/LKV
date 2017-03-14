@@ -12,6 +12,9 @@
 #ifdef USE_DO
 #include "DO_wrk.h"
 #endif
+#ifdef USE_SERVO
+#include "SERVO_wrk.h"
+#endif
 #ifdef USE_AI
 #include "AI_wrk.h"
 #endif
@@ -35,6 +38,9 @@ void common_setup()
 #endif
 #ifdef USE_DS18
 	DS18_setup();
+#endif
+#ifdef USE_SERVO
+	SERVO_setup();
 #endif
 	MQTT_setup();
 }

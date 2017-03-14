@@ -17,7 +17,7 @@ static bool mqttHandler(char* topic, uint8_t* payload, unsigned int length)
 	if (topic == NULL)
 		// after reconnect we need update subscribes
 		MQTT_subscribe(MQTT_topic(sDOUTS, "#", NULL), 0);
-	else if (len == 11 && length == 1)// && strncmp(topic + 3, sDOUTS, 5) == 0)
+	else if (len == 11 && length == 1 && strncmp(topic + 3, sDOUTS, 5) == 0)
 	{
 		//                 01234567890
 		// topic format = "01/DOUTS/cc";
