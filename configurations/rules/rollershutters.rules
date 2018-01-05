@@ -26,7 +26,7 @@ val Functions$Function6 extraForShutter = [
 |
 	var Object tUp = Math::floor(full_time_encoded / 1000)*100
 	var Object tDn = full_time_encoded % 1000 * 100
-	println("tUp="+tUp + " tDn="+tDn)
+	println(shutter.name+": tUp="+tUp+" tDn="+tDn)
 	extras.put(shutter.name, newHashMap(
 		"shutter" -> shutter,
 		"timer" -> null as Timer,
@@ -159,7 +159,7 @@ val Functions$Function3 updatePercent = [
     return currPercent  	
 ]
 
-var Functions$Function3 setPercent = [
+var Functions$Function3 setTargetPercent = [
 	HashMap<String, Object> extras,
 	String shutterName,
 	Number targetPercent 
@@ -234,7 +234,7 @@ var Functions$Function3 handleUserCmd = [
 	String shutterName,
 	Command cmd 
 |
-	println(shutterName+"."+cmd) 
+	//println(shutterName+"."+cmd) 
 	var lock = extras.get("$lock") as Lock
 	lock.lock()
 	try
@@ -243,12 +243,12 @@ var Functions$Function3 handleUserCmd = [
 	    {
 	        case UP:
 	        {
-			    var setPercent = extras.get("$setPercent") as Functions$Function3
+			    var setPercent = extras.get("$setTargetPercent") as Functions$Function3
 			    setPercent.apply(extras, shutterName, -100)
 	        }
 	        case DOWN:
 	        {
-			    var setPercent = extras.get("$setPercent") as Functions$Function3
+			    var setPercent = extras.get("$setTargetPercent") as Functions$Function3
 			    setPercent.apply(extras, shutterName, 200)
 	        }
 	        case STOP: 
@@ -285,10 +285,56 @@ var Functions$Function3 handleUserPerc = [
 	        case 9: p=90
 	        default: p=200 // 10 and other
 	    }
-	    var setPercent = extras.get("$setPercent") as Functions$Function3
+	    var setPercent = extras.get("$setTargetPercent") as Functions$Function3
 	    setPercent.apply(extras, shutterName, p)
     }
     finally lock.unlock() 
+]
+
+var Functions$Function3 setDoorState = [
+	HashMap<String, Object> extras,
+	String shutterName,
+	Command cmd 
+|
+	var shutterExtras = extras.get(shutterName) as HashMap<String, Object>
+    var rollerShutter = shutterExtras.get("shutter") as RollershutterItem
+	var timer = shutterExtras.get("timer") as Timer
+	if(timer==null)
+	{
+		switch(cmd)
+		{
+			case CLOSED:
+			{
+				rollerShutter.postUpdate(100)
+				shutterExtras.put("curr_percent", 100)
+			}
+			case OPEN:
+			{
+				rollerShutter.postUpdate(Undefined)
+				shutterExtras.put("curr_percent", 50)
+			}
+		}
+	}
+	else 
+	{
+	    var cmdHandler = extras.get("$handleRawCmd") as Functions$Function3
+		var lock = extras.get("$lock") as Lock
+		lock.lock()
+		try
+		{
+		    switch(cmd)
+		    {
+		    	case CLOSED:
+		    	{
+				    cmdHandler.apply(extras, shutterName, "STOP")
+				    rollerShutter.postUpdate(100)
+					shutterExtras.put("curr_percent", 100)
+			    }
+		    	//case OPEN:
+		    }
+	    }
+	    finally lock.unlock()
+    }
 ]
 
 rule "Initialization"
@@ -296,14 +342,46 @@ rule "Initialization"
 then
 	extras.put("$handleRawCmd", handleRawCmd)
 	extras.put("$updatePercent", updatePercent)
-	extras.put("$setPercent", setPercent)
+	extras.put("$setTargetPercent", setTargetPercent)
 	extras.put("$handleUserCmd", handleUserCmd)
-	extraForShutter.apply(extras, RS_GarDoor1, R_GarDoor1_up, R_GarDoor1_down, 050050, true)
-	extraForShutter.apply(extras, KitchenSouthShutter, KitchenSouthShutterUp, KitchenSouthShutterDown, 050050, true)
-	extraForShutter.apply(extras, KitchenFrontShutter, KitchenFrontShutterUp, KitchenFrontShutterDown, 100100, true)
-	extraForShutter.apply(extras, HallShutter, HallShutterUp, HallShutterDown, 150150, true)
+	extraForShutter.apply(extras, GarDoor1, GarDoor1_up, GarDoor1_down, 050050, true)
+	extraForShutter.apply(extras, GarDoor2, GarDoor2_up, GarDoor2_down, 050050, true)
+	//extraForShutter.apply(extras, KitchenSouthShutter, KitchenSouthShutterUp, KitchenSouthShutterDown, 050050, true)
+	//extraForShutter.apply(extras, KitchenFrontShutter, KitchenFrontShutterUp, KitchenFrontShutterDown, 100100, true)
+	//extraForShutter.apply(extras, HallShutter, HallShutterUp, HallShutterDown, 150150, true)
 end
 
+//***** Garage door 1
+rule "GarDoor1 control"
+when Item GarDoor1 received command 
+then handleUserCmd.apply(extras, "GarDoor1", receivedCommand) end
+
+rule "GarDoor1 percent"
+when Item GarDoor1_Perc received command 
+then handleUserPerc.apply(extras, "GarDoor1", receivedCommand) end
+
+rule "GarDoor1 state changed"
+when Item GarDoor1_State changed 
+then setDoorState.apply(extras,"GarDoor1", GarDoor1_State.state) end
+
+//***** Garage door 2
+rule "GarDoor2 control"
+when Item GarDoor2 received command 
+then handleUserCmd.apply(extras, "GarDoor2", receivedCommand) end
+
+rule "GarDoor2 percent"
+when Item GarDoor2_Perc received command 
+then handleUserPerc.apply(extras, "GarDoor2", receivedCommand) end
+
+rule "GarDoor2 closed"
+when Item GarDoor2_State changed to CLOSED 
+then GarDoor2.postUpdate(100) end
+
+rule "GarDoor2 not closed"
+when Item GarDoor2_State changed to OPEN
+then GarDoor2.postUpdate(Undefined) end
+
+//***** Роллставни
 rule "Кухня-юг управление"
 when Item KitchenSouthShutter received command 
 then handleUserCmd.apply(extras, "KitchenSouthShutter", receivedCommand) end
@@ -349,10 +427,4 @@ then
 	//else gShutters.postUpdate(Undefined)
 end
 
-rule "RS_GarDoor1 Control Rule"
-when
-    Item RS_GarDoor1 received command 
-then
-	handleUserCmd.apply(extras, "RS_GarDoor1", receivedCommand)
-end
 

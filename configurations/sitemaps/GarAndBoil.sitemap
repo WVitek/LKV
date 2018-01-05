@@ -1,0 +1,22 @@
+sitemap GarAndBoil label="Гараж/котельная"
+{
+	Frame label="Гараж" 
+ 	{
+		Text item=Gar_Motion_Sensor
+
+		Text item=Gar_Temp icon="temperature"
+		Text item=Gar_Humi icon="water"
+ 		Switch item=Gar_Vent
+
+		Text item=Cellar_Temp icon="temperature"
+		Text item=Cellar_Humi icon="water"
+ 		Switch item=Cellar_Vent
+    }
+
+	Frame label="Котельная" 
+ 	{
+		Text item=Boiler_Fwd_Temp icon="temperature"
+		Text item=Boiler_Rvr_Temp icon="temperature"
+ 		Switch item=Boiler_Relay
+    }
+}

@@ -1,25 +1,20 @@
-sitemap demo label="Каб.303"
+sitemap Entrances label="Ворота"
 {
-	//Text item=Date
-	Frame label="Кабинет 303" {
-		Text item=Hall_Temp32 icon="temperature"
-		Text item=Hall_Temp07 icon="temperature"
-		Text item=Hall_Temp06 icon="temperature"
-		Text item=Hall_Humi32 icon="water"
-		Text item=Hall_Humi07 icon="water"
-		Text item=Hall_GasCH icon="fire-on"
-		Text item=Hall_GasCO icon="fire"
-		Text item=Gar_Motion_Sensor
-		Text label="Графики за сутки..." icon="line" {
-//			{
-//			Frame label="Графики"
-				//change period to 4h for 4 hours, D for 1 day, 3D for 3 days, W for 1 Week, 3W for 3 weeks...
-				Chart item=Hall_Temp06 period=1D  refresh=60000
-				Chart item=Hall_Temp32 period=1D  refresh=60000
-				Chart item=Hall_Humi32 period=1D  refresh=60000
-				Chart item=Hall_GasCH period=1D  refresh=60000
-				Chart item=Hall_GasCO period=1D  refresh=60000
-//			}
-		}
-	}
+	Frame label="Калитка"
+ 	{
+ 		Switch item=WicketLock_Open
+ 		Text item=Immo_Key
+    }
+	Frame label="Ворота 1" 
+ 	{
+		Text item=GarDoor1_State
+		Switch item=GarDoor1
+ 		Selection item=GarDoor1_Perc mappings=[0="0% (открыто)", 1="10%", 2="20%", 3="30%", 4="40%", 5="50%", 6="60%", 7="70%", 8="80%", 9="90%", 10="100% (закрыто)"]
+    }
+	Frame label="Ворота 2" 
+ 	{
+		Text item=GarDoor2_State
+		Switch item=GarDoor2
+ 		Selection item=GarDoor2_Perc mappings=[0="0% (открыто)", 1="10%", 2="20%", 3="30%", 4="40%", 5="50%", 6="60%", 7="70%", 8="80%", 9="90%", 10="100% (закрыто)"]
+    }
 }

@@ -1,11 +1,11 @@
 Group Hall (All)
 
-Number			Hall_Temp06		"Темп#06 (слева) [%.1f °C]" <temperature> (Temperature,Hall) {mqtt="<[mymqtt:01/DS18B/06/temp:state:default]"}
-Number			Hall_Temp07		"Темп#07 (сзади) [%.1f °C]" <temperature> (Temperature,Hall) {mqtt="<[mymqtt:01/DHTxx/07/temp:state:default]"}
-Number			Hall_Humi07		"Влаж#07 (сзади)[%.1f %%]" <temperature> (Humidity,Hall) {mqtt="<[mymqtt:01/DHTxx/07/humi:state:default]"}
-Number			Hall_Temp32		"Темп#32 (справа) [%.1f °C]" <temperature> (Temperature,Hall) {mqtt="<[mymqtt:01/DHTxx/32/temp:state:default]"}
-Number			Hall_Humi32		"Влаж#32 (справа) [%.1f %%]" <temperature> (Humidity,Hall) {mqtt="<[mymqtt:01/DHTxx/32/humi:state:default]"}
-Number			Hall_GasCH		"Газ, CH (MQ-4) [%d]" <temperature> (Hall) {mqtt="<[mymqtt:01/AINPS/00/raw:state:default]"}
-Number			Hall_GasCO		"Газ, CO (MQ-7) [%d]" <temperature> (Hall) {mqtt="<[mymqtt:01/AINPS/01/raw:state:default]"}
+Number			Hall_Temp06		"Темп#06 (слева) [%.1f °C]" <temperature> (Temperature,Hall) //{mqtt="<[mymqtt:01/DS18B/06/temp:state:default]"}
+Number			Hall_Temp07		"Темп#07 (сзади) [%.1f °C]" <temperature> (Temperature,Hall) //{mqtt="<[mymqtt:01/DHTxx/07/temp:state:default]"}
+Number			Hall_Humi07		"Влаж#07 (сзади)[%.1f %%]" <temperature> (Humidity,Hall) //{mqtt="<[mymqtt:01/DHTxx/07/humi:state:default]"}
+Number			Hall_Temp32		"Темп#32 (справа) [%.1f °C]" <temperature> (Temperature,Hall) //{mqtt="<[mymqtt:01/DHTxx/32/temp:state:default]"}
+Number			Hall_Humi32		"Влаж#32 (справа) [%.1f %%]" <temperature> (Humidity,Hall) //{mqtt="<[mymqtt:01/DHTxx/32/humi:state:default]"}
+Number			Hall_GasCH		"Газ, CH (MQ-4) [%d]" <temperature> (Hall) //{mqtt="<[mymqtt:01/AINPS/00/raw:state:default]"}
+Number			Hall_GasCO		"Газ, CO (MQ-7) [%d]" <temperature> (Hall) //{mqtt="<[mymqtt:01/AINPS/01/raw:state:default]"}
 
 DateTime		Date				"Дата [%1$tA, %1$td.%1$tm.%1$tY]"	<calendar>	{ ntp="Asia/Yekaterinburg:ru_RU" }

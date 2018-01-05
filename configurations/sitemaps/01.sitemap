@@ -1,0 +1,38 @@
+sitemap KP1 label="КП1"
+{
+	Frame label="Калитка"
+ 	{
+ 		Switch item=WicketLock_Open
+    }
+	Frame label="Ворота 1" 
+ 	{
+		Text item=GarDoor1_State
+		Switch item=GarDoor1
+ 		Selection item=GarDoor1_Perc mappings=[0="0% (открыто)", 1="10%", 2="20%", 3="30%", 4="40%", 5="50%", 6="60%", 7="70%", 8="80%", 9="90%", 10="100% (закрыто)"]
+    }
+	Frame label="Ворота 2" 
+ 	{
+		Text item=GarDoor2_State
+		Switch item=GarDoor2
+ 		Selection item=GarDoor2_Perc mappings=[0="0% (открыто)", 1="10%", 2="20%", 3="30%", 4="40%", 5="50%", 6="60%", 7="70%", 8="80%", 9="90%", 10="100% (закрыто)"]
+    }
+	Frame label="Гараж" 
+ 	{
+		Text item=Gar_Motion_Sensor
+
+		Text item=Gar_Temp icon="temperature"
+		Text item=Gar_Humi icon="water"
+ 		Switch item=Gar_Vent
+
+		Text item=Cellar_Temp icon="temperature"
+		Text item=Cellar_Humi icon="water"
+ 		Switch item=Cellar_Vent
+    }
+
+	Frame label="Котельная" 
+ 	{
+		Text item=Boiler_Fwd_Temp icon="temperature"
+		Text item=Boiler_Rvr_Temp icon="temperature"
+ 		Switch item=Boiler_Relay
+    }
+}

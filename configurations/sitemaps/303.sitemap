@@ -1,0 +1,25 @@
+sitemap demo label="Каб.303"
+{
+	//Text item=Date
+	Frame label="Кабинет 303" {
+		Text item=Hall_Temp32 icon="temperature"
+		Text item=Hall_Temp07 icon="temperature"
+		Text item=Hall_Temp06 icon="temperature"
+		Text item=Hall_Humi32 icon="water"
+		Text item=Hall_Humi07 icon="water"
+		Text item=Hall_GasCH icon="fire-on"
+		Text item=Hall_GasCO icon="fire"
+		Text item=Gar_Motion_Sensor
+		Text label="Графики за сутки..." icon="line" {
+//			{
+//			Frame label="Графики"
+				//change period to 4h for 4 hours, D for 1 day, 3D for 3 days, W for 1 Week, 3W for 3 weeks...
+				Chart item=Hall_Temp06 period=1D  refresh=60000
+				Chart item=Hall_Temp32 period=1D  refresh=60000
+				Chart item=Hall_Humi32 period=1D  refresh=60000
+				Chart item=Hall_GasCH period=1D  refresh=60000
+				Chart item=Hall_GasCO period=1D  refresh=60000
+//			}
+		}
+	}
+}

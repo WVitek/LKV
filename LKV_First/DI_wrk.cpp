@@ -12,15 +12,21 @@ static uint32_t prevMs;
 
 void DI_setup()
 {
+	stateBits = (uint8_t*)malloc(nPinsDI * sizeof(uint8_t));
 	for (int i = 0; i < nPinsDI; i++)
 	{
 		int8_t pin = pinsDI[i];
 		if (pin < 0)
+		{
 			pinMode(-pin, INPUT_PULLUP);
-		else
+			pin = -pin;
+		}
+		else 
 			pinMode(pin, INPUT);
+		// special inverted state to publish initial value
+		uint8_t prevStateInv = (digitalRead(pin) == HIGH) ? 0: prevStateBit;
+		stateBits[i] = prevStateInv | maskReadCount;
 	}
-	stateBits = (uint8_t*)malloc(nPinsDI*sizeof(uint8_t));
 }
 
 bool DI_loop()

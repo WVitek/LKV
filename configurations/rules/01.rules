@@ -1,0 +1,20 @@
+rule "voice test"
+when
+	Item VoiceCommand received command "open wicklet"
+then
+    WicketLock_Open.sendCommand(ON)
+end
+
+rule "Wicket lock open"
+when Item WicketLock_Open changed to ON then
+    Thread::sleep(500)
+    WicketLock_Open.sendCommand(OFF)
+end
+
+rule "Immo auto reset"
+when Item Immo_Key changed to CLOSED then
+    Thread::sleep(20000)
+    Immo_Reset.sendCommand(ON)
+    Thread::sleep(1000)
+    Immo_Reset.sendCommand(OFF)
+end

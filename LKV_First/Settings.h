@@ -12,9 +12,9 @@
 #define USE_DHT
 #define USE_DS18
 #define USE_DO
-#define USE_SERVO
+//#define USE_SERVO
 #define USE_DI
-#define USE_AI
+//#define USE_AI
 
 #ifdef USE_DHT
 #include "wDHT.h"
@@ -37,7 +37,7 @@ extern uint8_t pinsAI[];
 extern const int nPinsAI;
 #endif
 
-//#define USE_DEBUG
+#define USE_DEBUG
 
 #ifdef USE_DEBUG
 #define DEBUG_PRINT(...) { Serial.print(__VA_ARGS__); }

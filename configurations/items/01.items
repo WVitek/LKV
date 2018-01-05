@@ -1,0 +1,33 @@
+Group Garage
+
+Contact GarDoor1_State		"Ворота 1 статус [MAP(gardoor.map):%s]" <garagedoor> (Garage, Doors)  {mqtt="<[mymqtt:01/DINPS/24:state:OPEN:0],<[mymqtt:01/DINPS/24:state:CLOSED:1]"}
+Switch GarDoor1_up			"Реле #46"	(Garage,Doors)	{mqtt=">[mymqtt:01/DOUTS/46:command:ON:0],>[mymqtt:01/DOUTS/46:command:OFF:1]"}
+Switch GarDoor1_down		"Реле #47"	(Garage,Doors)	{mqtt=">[mymqtt:01/DOUTS/47:command:ON:0],>[mymqtt:01/DOUTS/47:command:OFF:1]"}
+Rollershutter GarDoor1		"Ворота 1  [%d%%]"	(Garage, Doors)	{autoupdate="false"}
+Number GarDoor1_Perc		"задать %"	(Garage, Doors)
+
+Contact GarDoor2_State		"Ворота 2 статус [MAP(gardoor.map):%s]" <garagedoor> (Garage, Doors)  {mqtt="<[mymqtt:01/DINPS/26:state:OPEN:0],<[mymqtt:01/DINPS/26:state:CLOSED:1]"}
+Switch GarDoor2_up			"Реле #49"	{mqtt=">[mymqtt:01/DOUTS/49:command:ON:0],>[mymqtt:01/DOUTS/49:command:OFF:1]"}
+Switch GarDoor2_down		"Реле #48"	{mqtt=">[mymqtt:01/DOUTS/48:command:ON:0],>[mymqtt:01/DOUTS/48:command:OFF:1]"}
+Rollershutter GarDoor2		"Ворота 2  [%d%%]"	(Garage, Doors)	{autoupdate="false"}
+Number GarDoor2_Perc		"задать %"	(Garage, Doors)
+
+Contact Gar_Motion_Sensor	"Датчик движения [MAP(motion.map):%s]" <siren> (Garage, Motion)	{mqtt="<[mymqtt:01/DINPS/37:state:OPEN:0],<[mymqtt:01/DINPS/37:state:CLOSED:1]"}
+
+Switch Gar_Vent				"Вытяжка гаража"	(Garage) 	{mqtt=">[mymqtt:01/DOUTS/42:command:ON:0],>[mymqtt:01/DOUTS/42:command:OFF:1]"}
+Number	Gar_Temp			"Темп. в гараже [%d°C]" <temperature> (Temperature,Garage) {mqtt="<[mymqtt:01/DHTxx/36/temp:state:default]"}
+Number	Gar_Humi			"Влаж. в гараже [%d%%]" <temperature> (Humidity,Garage) {mqtt="<[mymqtt:01/DHTxx/36/humi:state:default]"}
+
+Switch Cellar_Vent			"Вытяжка погреба"	(Cellar) 	{mqtt=">[mymqtt:01/DOUTS/43:command:ON:0],>[mymqtt:01/DOUTS/43:command:OFF:1]"}
+Number	Cellar_Temp			"Темп. в погребе [%d°C]" <temperature> (Temperature,Cellar) {mqtt="<[mymqtt:01/DHTxx/38/temp:state:default]"}
+Number	Cellar_Humi			"Влаж. в погребе [%d%%]" <temperature> (Humidity,Cellar) {mqtt="<[mymqtt:01/DHTxx/38/humi:state:default]"}
+
+Switch Boiler_Relay			"Реле котла"	(Boiler) 	{mqtt=">[mymqtt:01/DOUTS/44:command:ON:0],>[mymqtt:01/DOUTS/44:command:OFF:1]"}
+Number	Boiler_Fwd_Temp		"Темп. прямотока [%.1f°C]" <temperature> (Temperature,Boiler) {mqtt="<[mymqtt:01/DS18B/32/temp:state:default]"}
+Number	Boiler_Rvr_Temp		"Темп. обратки [%.1f°C]" <temperature> (Temperature,Boiler) {mqtt="<[mymqtt:01/DS18B/33/temp:state:default]"}
+
+Switch WicketLock_Open		"Открыть замок"	(Wicklet) {mqtt=">[mymqtt:01/DOUTS/25:command:ON:0],>[mymqtt:01/DOUTS/25:command:OFF:1]"}
+Contact Immo_Key			"Беспроводной ключ [MAP(immokey.map):%s]" (Wicklet) {mqtt="<[mymqtt:01/DINPS/22:state:OPEN:1],<[mymqtt:01/DINPS/22:state:CLOSED:0]"}
+Switch Immo_Reset			"Сброс иммобилайзера"	(Wicklet) 	{mqtt=">[mymqtt:01/DOUTS/45:command:ON:0],>[mymqtt:01/DOUTS/45:command:OFF:1]"}
+
+String VoiceCommand
