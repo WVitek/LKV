@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30413.136
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LKV_First", "LKV_First\LKV_First.vcxproj", "{C5F80730-F44F-4478-BDAE-6634EFC2CA88}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LKV_Second", "LKV_Second\LKV_Second.vcxproj", "{645EAB50-78A2-4E01-8865-C640A3C451E4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,8 +17,15 @@ Global
 		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|x86.Build.0 = Debug|Win32
 		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x86.ActiveCfg = Release|Win32
 		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x86.Build.0 = Release|Win32
+		{645EAB50-78A2-4E01-8865-C640A3C451E4}.Debug|x86.ActiveCfg = Debug|Win32
+		{645EAB50-78A2-4E01-8865-C640A3C451E4}.Debug|x86.Build.0 = Debug|Win32
+		{645EAB50-78A2-4E01-8865-C640A3C451E4}.Release|x86.ActiveCfg = Release|Win32
+		{645EAB50-78A2-4E01-8865-C640A3C451E4}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {02A73FC1-69BA-4985-897A-A29AA57D8360}
 	EndGlobalSection
 EndGlobal
