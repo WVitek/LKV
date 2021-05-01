@@ -16,7 +16,7 @@ static bool mqttHandler(char* topic, uint8_t* payload, unsigned int length)
 	if (topic == NULL)
 		// after reconnect we need update subscribes
 		MQTT_subscribe(MQTT_topic(sRGBWW, "#", NULL), 0);
-	else if (len == 11 && length == 1 && strncmp(topic + 3, sRGBWW, 5) == 0)
+	else if (len == 11 && length <= 10 && strncmp(topic + 3, sRGBWW, 5) == 0)
 	{
 		//                 01234567890
 		// topic format = "01/RGBWW/cc";
@@ -24,7 +24,9 @@ static bool mqttHandler(char* topic, uint8_t* payload, unsigned int length)
 		if (ch >= nRGB)
 			return true;
 
-		DEBUG_PRINT("RGB"); DEBUG_PRINT(ch); DEBUG_PRINT('='); DEBUG_PRINTLN((char*)payload);
+		DEBUG_PRINT("RGB"); DEBUG_PRINT(ch); DEBUG_PRINT('=');
+		for (int i = 0; i < length; i++)
+			DEBUG_PRINT((char)payload[i]);
 		// payload format = "RRGGBBW1W2" in hex
 		rgb[ch].set((char*)payload);
 		return true;
@@ -48,8 +50,10 @@ RGB::RGB(uint8_t pinR, uint8_t pinG, uint8_t pinB, uint8_t pinW1, uint8_t pinW2)
 
 void RGB::setup() {
 	for (int i = 0; i < 5; i++)
-		if (pins[i] > 0)
+		if (pins[i] > 0) {
 			pinMode(pins[i], OUTPUT);
+			analogWrite(pins[i], 0);
+		}
 }
 
 void RGB::set(char hex[]) {

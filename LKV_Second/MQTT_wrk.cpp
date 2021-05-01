@@ -27,18 +27,21 @@ static void mqttCallback(char* topic, uint8_t* payload, unsigned int length)
 {
 	if (f_handler(topic, payload, length) || length == 0)
 		return;
-	if (topic != NULL) {
-		DEBUG_PRINT(topic);
-		DEBUG_PRINT('=');
-		DEBUG_PRINTLN((char)payload[0]);
-	}
 	// In order to republish this payload, a copy must be made
 	// as the orignal payload buffer will be overwritten whilst
 	// constructing the PUBLISH packet.
 	// Allocate the correct amount of memory for the payload copy
-	byte* p = (byte*)malloc(length);
+	byte* p = (byte*)malloc(length+1);
 	// Copy the payload to the new buffer
 	memcpy(p, payload, length);
+#ifdef USE_DEBUG
+	if (topic != NULL) {
+		p[length] = 0;
+		DEBUG_PRINT(topic);
+		DEBUG_PRINT('=');
+		DEBUG_PRINTLN((char*)p);
+	}
+#endif
 	mqttClient.publish("outTopic", p, length);
 	// Free the memory
 	free(p);
