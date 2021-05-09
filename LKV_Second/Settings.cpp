@@ -16,8 +16,8 @@ char mqttBuf[] = "02/kkkkk/cc/description";
 //*
 // @home
 uint8_t ethernetIP[4] = { 192,168,1,222 };
-uint8_t mqttServerIP[4] = { 192,168,1,220 }; // lkv
-//uint8_t mqttServerIP[4] = { 192,168,1,200 }; // whome
+//uint8_t mqttServerIP[4] = { 192,168,1,220 }; // lkv
+uint8_t mqttServerIP[4] = { 192,168,1,200 }; // whome
 uint16_t mqttServerPort = 1883u;
 /*/
 // @work
