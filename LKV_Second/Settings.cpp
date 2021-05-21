@@ -13,19 +13,9 @@ char mqttBuf[] = "02/kkkkk/cc/description";
 // 2,3 - DO
 
 
-//*
-// @home
 uint8_t ethernetIP[4] = { 192,168,1,222 };
-//uint8_t mqttServerIP[4] = { 192,168,1,220 }; // lkv
-uint8_t mqttServerIP[4] = { 192,168,1,200 }; // whome
+uint8_t mqttServerIP[4] = { 192,168,1,220 }; // lkv && whome
 uint16_t mqttServerPort = 1883u;
-/*/
-// @work
-uint8_t ethernetIP[4] = { 172,22,130,220 };
-//uint8_t ethernetIP[4] = { 192,168,31,220 }; // через роутер
-uint8_t mqttServerIP[4] = { 172,22,130,44 };
-uint16_t mqttServerPort = 3389u;
-//*/
 
 #ifdef USE_DHT
 #include "wDHT.h"
