@@ -11,11 +11,11 @@
 
 #define USE_DHT
 #define USE_DS18
-//#define USE_DO
+#define USE_DO
 //#define USE_SERVO
 #define USE_DI
 //#define USE_AI
-//#define USE_RGB
+#define USE_RGB
 
 #ifdef USE_DHT
 #include "wDHT.h"
