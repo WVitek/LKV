@@ -60,12 +60,24 @@ val Functions$Function3 handleRawCmd = [
         	swDn.sendCommand(OFF)
         	swUp.sendCommand(ON)
         }
+        else
+	{
+		swUp.sendCommand(ON)
+		Thread::sleep(100)
+		swUp.sendCommand(OFF)
+	}
         case "DOWN":
         if(isRaw)
         {
         	swUp.sendCommand(OFF)
         	swDn.sendCommand(ON)
         }
+        else
+	{
+		swDn.sendCommand(ON)
+		Thread::sleep(100)
+		swDn.sendCommand(OFF)
+	}
         default: // STOP
         {
         	var timer = shutterExtras.get("timer") as Timer
@@ -77,12 +89,24 @@ val Functions$Function3 handleRawCmd = [
 		    var speed = shutterExtras.get("speed") as Number
 			shutterExtras.put("speed", 0)
 	    	if(isRaw)
-	    	{
-	    		if(speed<0)
-	    			swUp.sendCommand(OFF)
-	    		else
-	    			swDn.sendCommand(OFF)
-			}
+		{
+			if(speed<0)
+				swUp.sendCommand(OFF)
+			else
+				swDn.sendCommand(OFF)
+		}
+		else
+		{
+			if(speed<0)
+				swUp.sendCommand(ON)
+			else
+				swDn.sendCommand(ON)
+			Thread::sleep(100)
+			if(speed<0)
+				swUp.sendCommand(OFF)
+			else
+				swDn.sendCommand(OFF)
+		}
         }
     } 
 ]
@@ -344,8 +368,8 @@ then
 	extras.put("$updatePercent", updatePercent)
 	extras.put("$setTargetPercent", setTargetPercent)
 	extras.put("$handleUserCmd", handleUserCmd)
-	extraForShutter.apply(extras, GarDoor1, GarDoor1_up, GarDoor1_down, 050050, true)
-	extraForShutter.apply(extras, GarDoor2, GarDoor2_up, GarDoor2_down, 050050, true)
+	extraForShutter.apply(extras, GarDoor1, GarDoor1_up, GarDoor1_down, 270270, false)
+	extraForShutter.apply(extras, GarDoor2, GarDoor2_up, GarDoor2_down, 270270, false)
 	//extraForShutter.apply(extras, KitchenSouthShutter, KitchenSouthShutterUp, KitchenSouthShutterDown, 050050, true)
 	//extraForShutter.apply(extras, KitchenFrontShutter, KitchenFrontShutterUp, KitchenFrontShutterDown, 100100, true)
 	//extraForShutter.apply(extras, HallShutter, HallShutterUp, HallShutterDown, 150150, true)

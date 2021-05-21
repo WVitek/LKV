@@ -13,8 +13,12 @@ end
 
 rule "Immo auto reset"
 when Item Immo_Key changed to CLOSED then
-    Thread::sleep(20000)
-    Immo_Reset.sendCommand(ON)
-    Thread::sleep(1000)
-    Immo_Reset.sendCommand(OFF)
+	Thread::sleep(1000)
+	if(Immo_Key.state == CLOSED)
+	{
+		Thread::sleep(20000)
+		Immo_Reset.sendCommand(ON)
+		Thread::sleep(1000)
+		Immo_Reset.sendCommand(OFF)
+	}
 end

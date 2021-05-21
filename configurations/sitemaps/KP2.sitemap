@@ -1,0 +1,15 @@
+sitemap KP2 label="Баня"
+{
+	Frame label="Душевая"
+	{
+ 		Switch item=BathShower_Vent
+		Text item=BathShower_Temp icon="temperature"
+		Text item=BathShower_Humi icon="water"
+	}
+	Frame label="Сауна"
+	{
+		Text item=BathSauna_Temp1 icon="temperature"
+		Text item=BathSauna_Temp2 icon="temperature"
+		Text item=BathSauna_Humi2 icon="water"
+	}
+}

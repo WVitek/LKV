@@ -1,0 +1,9 @@
+Group Bath
+
+Switch	BathShower_Vent			"Вытяжка душевой"	(Bath) 	{mqtt=">[mymqtt:02/DOUTS/07:command:ON:0],>[mymqtt:02/DOUTS/07:command:OFF:1]"}
+Number	BathShower_Temp			"Темп. душевой [%.1f°C]" <temperature> (Temperature,Bath) {mqtt="<[mymqtt:02/DHTxx/07/temp:state:default]"}
+Number	BathShower_Humi			"Влаж. душевой [%.1f%%]" <temperature> (Humidity,Bath) {mqtt="<[mymqtt:02/DHTxx/07/humi:state:default]"}
+
+Number	BathSauna_Temp1 		"Темп. сауны, верх [%.1f°C]" <temperature> (Temperature,Bath) {mqtt="<[mymqtt:02/DS18B/14/temp:state:default]"}
+Number	BathSauna_Temp2			"Темп. сауны, низ [%.1f°C]" <temperature> (Temperature,Bath) {mqtt="<[mymqtt:02/DHTxx/08/temp:state:default]"}
+Number	BathSauna_Humi2			"Влаж. сауны, низ [%.1f%%]" <temperature> (Humidity,Bath) {mqtt="<[mymqtt:02/DHTxx/08/humi:state:default]"}
